@@ -20,6 +20,7 @@ bool level_one_fin = false;
 // Hero movement
 double hero_dx = 0;
 double hero_dy = 0;
+bool on_platform = false;
 
 sprite_id hero;
 sprite_id exit_door;
@@ -97,6 +98,7 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 			// platform.
 			else {
 				dy = 0;
+        on_platform = true;
 			}
 
 			// (e.f) Make bird take one step backward, then turn bird
@@ -133,6 +135,24 @@ void setup(void) {
     level_one();
 }
 
+void gravity(void) {
+    int hy = round(sprite_y(platform));
+
+    if (round(sprite_y(hero)) == hy + round(sprite_height(platform)) - 4
+      &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
+      &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero)) {
+        on_platform = true;
+    } else {
+        on_platform = false;
+    }
+
+    if (sprite_y(hero) < SCREEN_HEIGHT - 3 && !on_platform) {
+        sprite_turn_to(hero, hero_dx, hero_dy + 0.1);
+    } else {
+        sprite_turn_to(hero, hero_dx, 0);
+    }
+}
+
 void re_update(void) {
     // Draw border lines
     draw_line(0, 1, SCREEN_WIDTH, 1, '-'); // TOP LINE
@@ -143,14 +163,8 @@ void re_update(void) {
     hero_dx = sprite_dx(hero);
     hero_dy = sprite_dy(hero);
 
-    if (sprite_y(hero) < SCREEN_HEIGHT - 3) {
-        sprite_turn_to(hero, hero_dx, hero_dy + 0.1);
-    } else {
-        sprite_turn_to(hero, hero_dx, 0);
-    }
+    gravity();
 }
-
-
 
 void level_one(void) {
 
@@ -185,9 +199,7 @@ void process(void) {
         if (process_collision(hero, zombie)) {
             game_over = true;
         }
-        if (process_collision(hero, platform)) {
-
-        }
+        process_collision(hero, platform);
 
         sprite_step(zombie);
         sprite_draw(zombie);
@@ -219,6 +231,7 @@ void process(void) {
 
     if (input == 'w' && sprite_dy(hero) == 0) {
         sprite_turn_to(hero, hero_dx, hero_dy - 2.0);
+        on_platform = false;
     }
 
     // Check if the hero hit a wall (LEFT & RIGHT)
