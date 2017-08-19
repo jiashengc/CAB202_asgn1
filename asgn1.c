@@ -38,6 +38,7 @@ timer_id timer;
 sprite_id hero;
 sprite_id exit_door;
 sprite_id zombie;
+sprite_id spinner;
 sprite_id platform;
 
 // Sprite vectors
@@ -52,6 +53,10 @@ char * exit_sprite =
 /**/	"| .|"
 /**/  "|  |";
 
+char * spinner_sprite =
+/**/  " |"
+/**/  "/\\";
+
 char * zombie_sprite =
 /**/	"ZZZZ"
 /**/	"  Z "
@@ -59,7 +64,8 @@ char * zombie_sprite =
 /**/	"ZZZZ";
 
 char * platform_sprite =
-"====================";
+"====================================================";
+
 
 void level_one(void);
 
@@ -136,17 +142,8 @@ void setup(void) {
     int length = (int)SCREEN_WIDTH * 0.66 - (int)SCREEN_HEIGHT * 0.33;
     const char * box = "=";
 
-    // Initialise sprites
-    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
-    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
-    zombie = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, zombie_sprite);
-    platform = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.77, 20, 1, platform_sprite);
-
     // Initialise timer
     timer = create_timer(10);
-
-    // Set defaults
-    sprite_turn_to(hero, 0, 0);
 
     // Start Level one
     level_one();
@@ -180,9 +177,10 @@ void re_update(void) {
     draw_line(SCREEN_WIDTH, 2, SCREEN_WIDTH, SCREEN_HEIGHT - 1, '|'); // RIGHT LINE
 
     // Draw stats
-
-    draw_formatted(1, 0, "Times: %02d:%02d", minutes, seconds);
-
+    draw_formatted(SCREEN_WIDTH * 0.11, 0, "Times: %02d:%02d", minutes, seconds);
+    draw_formatted(SCREEN_WIDTH * 0.33, 0, "Lives: %d", lives);
+    draw_formatted(SCREEN_WIDTH * 0.55, 0, "Level: %d", level);
+    draw_formatted(SCREEN_WIDTH * 0.77, 0, "Score: %d", score);
 
     hero_dx = sprite_dx(hero);
     hero_dy = sprite_dy(hero);
@@ -191,6 +189,19 @@ void re_update(void) {
 }
 
 void level_one(void) {
+    char platform_1_sprite[69];
+    int platform_length = (int)(SCREEN_WIDTH * 0.3 - 1);
+    int i, pos = 0;
+
+    for (i = 0; i < platform_length; i+=1) {
+        pos += sprintf(&platform_1_sprite[pos], "%d", platform_sprite[i]);
+    }
+
+    // Initialise sprite
+    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
+    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
+    zombie = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, zombie_sprite);
+    platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_length + 1, 1, platform_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
@@ -202,6 +213,20 @@ void level_one(void) {
     sprite_turn_to(zombie, -0.15, 0);
 
     level_one_start = true;
+}
+
+void level_two(void) {
+
+    // Initialize the sprites
+    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
+    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
+    spinner = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
+
+    // Draw the sprites
+    sprite_draw(hero);
+    sprite_draw(exit_door);
+    sprite_draw(spinner);
+
 }
 
 void process_time(void) {
@@ -225,24 +250,36 @@ void process(void) {
 
     // Within LEVEL ONE
     if (level_one_start && !level_one_fin) {
-        //draw_line(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77 , SCREEN_WIDTH * 0.66, SCREEN_HEIGHT * 0.77, '=');
-
         // Check if zombie has hit the wall
         if (sprite_x(zombie) < 1 || sprite_x(zombie) > SCREEN_WIDTH - 3) {
             sprite_turn(zombie, 180);
         }
 
-        // Check if the player has hit the player
+        // Check if the hero hits other sprites within the level
         if (process_collision(hero, zombie)) {
-            game_over = true;
+            lives -= 1;
+            level_one();
         }
         process_collision(hero, platform);
+        if (process_collision(hero, exit_door)) {
+            score += 100;
+            level_one_fin = true;
+            sprite_destroy(hero);
+            sprite_destroy(platform);
+            sprite_destroy(zombie);
+            level_two();
+        }
 
         sprite_step(zombie);
         sprite_draw(zombie);
         sprite_draw(platform);
     }
 
+
+    // Check if lives has reached 0
+    if (lives <= 0) {
+        game_over = true;
+    }
 
     // Check for hero movements
     // Check if the hero is moving right
