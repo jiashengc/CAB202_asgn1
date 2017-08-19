@@ -19,6 +19,8 @@ bool level_one_start = false;
 bool level_one_fin = false;
 bool level_two_start = false;
 bool level_two_fin = false;
+bool level_three_start = false;
+bool level_three_fin = false;
 
 // Hero movement
 double hero_dx = 0;
@@ -245,7 +247,74 @@ void level_two(void) {
     sprite_draw(platform);
     //sprite_draw(platform_2);
 
+    // Move the spinner
+    sprite_turn_to(spinner, -0.2, 0);
+
     level_two_start = true;
+}
+
+void level_three(void) {
+
+
+    level_three_start = true;
+}
+
+void process_level_one(void) {
+    // Check if zombie has hit the wall
+    if (sprite_x(zombie) < 1 || sprite_x(zombie) > SCREEN_WIDTH - 3) {
+        sprite_turn(zombie, 180);
+    }
+
+    // Check if the hero hits other sprites within the level
+    if (process_collision(hero, zombie)) {
+        lives -= 1;
+        level_one();
+    }
+    process_collision(hero, platform);
+    if (process_collision(hero, exit_door)) {
+        score += 100;
+        level_one_start = false;
+        level_one_fin = true;
+        sprite_destroy(hero);
+        //sprite_destroy(platform);
+        sprite_destroy(zombie);
+        level += 1;
+        level_two();
+    }
+
+    sprite_step(zombie);
+    sprite_draw(zombie);
+    sprite_draw(platform);
+}
+
+void process_level_two(void) {
+  // Check if the spinner hit the wall
+  if (sprite_x(spinner) < 1 || sprite_x(spinner) > SCREEN_WIDTH - 2) {
+      sprite_turn(spinner, 180);
+  }
+
+  // Checks if the hero hits the other spirtes within the level
+  if (process_collision(hero, spinner)) {
+      lives -= 1;
+      level_two();
+  }
+  process_collision(hero, platform);
+  if (process_collision(hero, exit_door)) {
+      score += 100;
+      level_two_start = false;
+      level_two_fin = true;
+      sprite_destroy(hero);
+      //sprite_destroy(platform);
+      sprite_destroy(spinner);
+      level += 1;
+      level_three();
+  }
+
+  sprite_draw(hero);
+  sprite_draw(exit_door);
+  sprite_draw(spinner);
+  sprite_draw(platform);
+  //sprite_draw(platform_2);
 }
 
 void process_time(void) {
@@ -269,40 +338,12 @@ void process(void) {
 
     // Within LEVEL ONE
     if (level_one_start && !level_one_fin) {
-        // Check if zombie has hit the wall
-        if (sprite_x(zombie) < 1 || sprite_x(zombie) > SCREEN_WIDTH - 3) {
-            sprite_turn(zombie, 180);
-        }
-
-        // Check if the hero hits other sprites within the level
-        if (process_collision(hero, zombie)) {
-            lives -= 1;
-            level_one();
-        }
-        process_collision(hero, platform);
-        if (process_collision(hero, exit_door)) {
-            score += 100;
-            level_one_start = false;
-            level_one_fin = true;
-            sprite_destroy(hero);
-            //sprite_destroy(platform);
-            sprite_destroy(zombie);
-            level_two();
-        }
-
-        sprite_step(zombie);
-        sprite_draw(zombie);
-        sprite_draw(platform);
+        process_level_one();
     }
 
     // Within LEVEL TWO
     else if (level_two_start && !level_two_fin) {
-
-      sprite_draw(hero);
-      sprite_draw(exit_door);
-      sprite_draw(spinner);
-      sprite_draw(platform);
-      //sprite_draw(platform_2);
+        process_level_two();
     }
 
 
@@ -332,10 +373,27 @@ void process(void) {
             sprite_turn_to(hero, hero_dx - 0.2, hero_dy);
         }
     }
-
+    // Check if the player jumps
     if (input == 'w' && sprite_dy(hero) == 0) {
         sprite_turn_to(hero, hero_dx, hero_dy - 2.0);
         on_platform = false;
+    }
+    // Check if the player is skipping a level
+    if (input == 'l') {
+        switch(level) {
+            case 1:
+                level_one_start = false;
+                level_two_start = true;
+                level += 1;
+                level_two();
+                break;
+            case 2:
+                level_two_start = false;
+                level_three_start = true;
+                level += 1;
+                level_three();
+                break;
+        }
     }
 
     // Check if the hero hit a wall (LEFT & RIGHT)
