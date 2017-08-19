@@ -17,6 +17,8 @@ bool update_screen = true;
 // Game levels
 bool level_one_start = false;
 bool level_one_fin = false;
+bool level_two_start = false;
+bool level_two_fin = false;
 
 // Hero movement
 double hero_dx = 0;
@@ -40,6 +42,7 @@ sprite_id exit_door;
 sprite_id zombie;
 sprite_id spinner;
 sprite_id platform;
+sprite_id platform_2;
 
 // Sprite vectors
 char * hero_sprite =
@@ -64,6 +67,9 @@ char * zombie_sprite =
 /**/	"ZZZZ";
 
 char * platform_sprite =
+"====================================================";
+
+char * platform_sprite_2 =
 "====================================================";
 
 
@@ -216,17 +222,35 @@ void level_one(void) {
 }
 
 void level_two(void) {
+    char platform_1_sprite[69];
+    char platform_2_sprite[42];
+    int platform_1_length = (int)(SCREEN_WIDTH * 0.3 - 1);
+    int platform_2_length = (int)(SCREEN_WIDTH * 0.1 - 1);
+    int i, pos = 0, pos2 = 0;
+
+    for (i = 0; i < platform_1_length; i+=1) {
+        pos += sprintf(&platform_1_sprite[pos], "%d", platform_sprite[i]);
+    }
+
+    for (i = 0; i < platform_2_length; i+=1) {
+        pos2 += sprintf(&platform_2_sprite[pos2], "%d", platform_sprite_2[i]);
+    }
 
     // Initialize the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
     spinner = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
+    platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_1_sprite);
+    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_2_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
     sprite_draw(spinner);
+    sprite_draw(platform);
+    sprite_draw(platform_2);
 
+    level_two_start = true;
 }
 
 void process_time(void) {
@@ -273,6 +297,13 @@ void process(void) {
         sprite_step(zombie);
         sprite_draw(zombie);
         sprite_draw(platform);
+    } else if (level_two_start && !level_two_fin) {
+
+      sprite_draw(hero);
+      sprite_draw(exit_door);
+      sprite_draw(spinner);
+      sprite_draw(platform);
+      sprite_draw(platform_2);
     }
 
 
