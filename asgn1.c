@@ -10,6 +10,7 @@
 #define SCREEN_WIDTH (screen_width() - 1)
 #define SCREEN_HEIGHT (screen_height() - 1)
 
+// Game stuff
 bool game_over = false;
 bool update_screen = true;
 
@@ -22,11 +23,24 @@ double hero_dx = 0;
 double hero_dy = 0;
 bool on_platform = false;
 
+// Stats
+int delay = 0;
+int minutes = 0;
+int seconds = 0;
+int lives = 10;
+int level = 1;
+int score = 0;
+
+// Time
+timer_id timer;
+
+// Sprites
 sprite_id hero;
 sprite_id exit_door;
 sprite_id zombie;
 sprite_id platform;
 
+// Sprite vectors
 char * hero_sprite =
 /**/	" o "
 /**/	"/|\\"
@@ -128,6 +142,9 @@ void setup(void) {
     zombie = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, zombie_sprite);
     platform = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.77, 20, 1, platform_sprite);
 
+    // Initialise timer
+    timer = create_timer(10);
+
     // Set defaults
     sprite_turn_to(hero, 0, 0);
 
@@ -138,6 +155,7 @@ void setup(void) {
 void gravity(void) {
     int hy = round(sprite_y(platform));
 
+    // Check if the platform
     if (round(sprite_y(hero)) == hy + round(sprite_height(platform)) - 4
       &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
       &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero)) {
@@ -154,11 +172,17 @@ void gravity(void) {
 }
 
 void re_update(void) {
+
     // Draw border lines
     draw_line(0, 1, SCREEN_WIDTH, 1, '-'); // TOP LINE
     draw_line(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, '='); // BOTTOM LINE
     draw_line(0, 2, 0, SCREEN_HEIGHT - 1, '|'); // LEFT LINE
     draw_line(SCREEN_WIDTH, 2, SCREEN_WIDTH, SCREEN_HEIGHT - 1, '|'); // RIGHT LINE
+
+    // Draw stats
+
+    draw_formatted(1, 0, "Times: %02d:%02d", minutes, seconds);
+
 
     hero_dx = sprite_dx(hero);
     hero_dy = sprite_dy(hero);
@@ -180,8 +204,21 @@ void level_one(void) {
     level_one_start = true;
 }
 
+void process_time(void) {
+    delay += 1;
+    if (delay == 100) {
+        delay = 0;
+        seconds += 1;
+        if (seconds == 0) {
+            seconds = 0;
+            minutes += 1;
+        }
+    }
+}
+
 void process(void) {
     clear_screen();
+    process_time();
     re_update();
 
     int input = get_char();
