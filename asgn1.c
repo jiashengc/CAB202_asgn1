@@ -66,6 +66,8 @@ char * zombie_sprite =
 /**/	" Z  "
 /**/	"ZZZZ";
 
+char platform_1_sprite[61];
+
 char * platform_sprite =
 "====================================================";
 
@@ -195,7 +197,7 @@ void re_update(void) {
 }
 
 void level_one(void) {
-    char platform_1_sprite[69];
+    platform_1_sprite[61];
     int platform_length = (int)(SCREEN_WIDTH * 0.3 - 1);
     int i, pos = 0;
 
@@ -222,33 +224,26 @@ void level_one(void) {
 }
 
 void level_two(void) {
-    char platform_1_sprite[69];
-    char platform_2_sprite[42];
+    char platform_2_sprite[21];
     int platform_1_length = (int)(SCREEN_WIDTH * 0.3 - 1);
-    int platform_2_length = (int)(SCREEN_WIDTH * 0.1 - 1);
-    int i, pos = 0, pos2 = 0;
 
-    for (i = 0; i < platform_1_length; i+=1) {
-        pos += sprintf(&platform_1_sprite[pos], "%d", platform_sprite[i]);
-    }
-
-    for (i = 0; i < platform_2_length; i+=1) {
-        pos2 += sprintf(&platform_2_sprite[pos2], "%d", platform_sprite_2[i]);
-    }
+    // for (n = 0; n < platform_2_length; n+=1) {
+    //     pos2 += sprintf(&platform_2_sprite[pos2], "%d", platform_sprite_2[n]);
+    // }
 
     // Initialize the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
     spinner = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
-    platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_1_sprite);
-    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_2_sprite);
+    //platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_1_sprite);
+    //platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_2_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
     sprite_draw(spinner);
     sprite_draw(platform);
-    sprite_draw(platform_2);
+    //sprite_draw(platform_2);
 
     level_two_start = true;
 }
@@ -287,9 +282,10 @@ void process(void) {
         process_collision(hero, platform);
         if (process_collision(hero, exit_door)) {
             score += 100;
+            level_one_start = false;
             level_one_fin = true;
             sprite_destroy(hero);
-            sprite_destroy(platform);
+            //sprite_destroy(platform);
             sprite_destroy(zombie);
             level_two();
         }
@@ -297,13 +293,16 @@ void process(void) {
         sprite_step(zombie);
         sprite_draw(zombie);
         sprite_draw(platform);
-    } else if (level_two_start && !level_two_fin) {
+    }
+
+    // Within LEVEL TWO
+    else if (level_two_start && !level_two_fin) {
 
       sprite_draw(hero);
       sprite_draw(exit_door);
       sprite_draw(spinner);
       sprite_draw(platform);
-      sprite_draw(platform_2);
+      //sprite_draw(platform_2);
     }
 
 
