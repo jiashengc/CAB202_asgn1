@@ -13,6 +13,7 @@
 // Game stuff
 bool game_over = false;
 bool update_screen = true;
+bool the_end = false;
 
 // Game levels
 bool level_one_start = false;
@@ -138,51 +139,29 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 	if ( oy >= hy + sprite_height(obj_1)) collided = false;
 
 	if ( collided ) {
-		// (e) If bird hit platform
 		if (obj_1 == hero) {
-			// (e.a) declare floating point variables dx and dy and
-			// initialise them with the velocity components of the bird.
 			double dx = sprite_dx(hero), dy = sprite_dy(hero);
 
-			// (e.b) If bird has struck the platform from below
-			// negate dy but leave dx alone. The bird is bumping from
-			// below if the top of the bird is level with the platform
-			// and the bird is moving upwards.
 			if ( hy == oy + sprite_height(hero) - 1 && dy < 0 ) {
 				dy = -dy;
 			}
 
-			// (e.c) Otherwise, if the bird has bumped into the left end
-			// then quench horizontal velocity. The bird bumps the left edge if
-			// it is moving to the right and the right-most edge overlaps
-			// the left edge of the platform.
 			else if ( hx + sprite_width(hero) - 1 == ox && dx > 0 ) {
 				dx = 0;
 			}
 
-			// (e.d) Otherwise, if the bird has bumped into the right end
-			// then quench horizontal velocity.The bird bumps the right edge if
-			// it is moving to the left and the left-most edge overlaps
-			// the right edge of the platform.
 			else if ( hx == ox + sprite_width(obj_2) - 1 && dx < 0 ) {
 				dx = 0;
 			}
 
-			// (e.e) Otherwise, we landed on the top, so we quench the
-			// vertical velocity, so the birdcan slide along the top of the
-			// platform.
 			else {
 				dy = 0;
         on_platform = true;
 			}
 
-			// (e.f) Make bird take one step backward, then turn bird
-			// to move in new (dx,dy) direction.
 			sprite_back(hero);
 			sprite_turn_to(hero, dx, dy);
 		}
-		// (f) Otherwise, if platform moved, push bird down until
-		// not overlapping the platform.
 		else {
 			sprite_move_to(hero, sprite_x(hero), sprite_y(obj_2) + sprite_height(obj_2));
 		}
@@ -731,7 +710,7 @@ void process(void) {
 
     // Check for hero movements
     // Check if the hero is moving right
-    if (input == 'd') {
+    if (input == 'd' && sprite_dy(hero) == 0) {
         if (hero_dx > 0) {
             sprite_turn_to(hero, 0.4, hero_dy);
         } else if (hero_dx < 0) {
@@ -741,7 +720,7 @@ void process(void) {
         }
     }
     // Check if the hero is moving left
-    if (input == 'a') {
+    if (input == 'a' && sprite_dy(hero) == 0) {
         if (hero_dx < 0) {
             sprite_turn_to(hero, -0.4, hero_dy);
         } else if (hero_dx > 0) {
@@ -808,6 +787,19 @@ void cleanup(void) {
     clear_screen();
 }
 
+void game_over_screen(void) {
+    // Wait till the player does something
+    clear_screen();
+
+    while ( get_char() >= 0 ) {}
+    draw_formatted(SCREEN_WIDTH * 0.48, SCREEN_HEIGHT * 0.45, "GAME OVER");
+    if (level_five_fin) {
+        draw_formatted(SCREEN_WIDTH * 0.47, SCREEN_HEIGHT * 0.47, "SCORE: %d", score);
+    }
+    draw_formatted(SCREEN_WIDTH * 0.42, SCREEN_HEIGHT * 0.50, "Press any key to exit!");
+
+}
+
 int main(void) {
   setup_screen();
 
@@ -828,6 +820,22 @@ int main(void) {
   }
 
   cleanup();
+
+  while(!the_end) {
+      game_over_screen();
+
+      if (update_screen) {
+          show_screen();
+      }
+
+      timer_pause(DELAY);
+
+      if (wait_char() >= 0) {
+          the_end = true;
+      }
+  }
+
+  timer_pause(100);
 
   return 0;
 }
