@@ -192,14 +192,6 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 }
 
 void setup(void) {
-
-    int i = 0;
-    int length = (int)SCREEN_WIDTH * 0.66 - (int)SCREEN_HEIGHT * 0.33;
-    const char * box = "=";
-
-    // Initialise timer
-    timer = create_timer(10);
-
     // Start Level one
     level_one();
 }
