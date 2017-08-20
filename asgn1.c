@@ -21,6 +21,8 @@ bool level_two_start = false;
 bool level_two_fin = false;
 bool level_three_start = false;
 bool level_three_fin = false;
+bool level_four_start = false;
+bool level_four_fin = false;
 
 // Hero movement
 double hero_dx = 0;
@@ -35,6 +37,9 @@ int lives = 10;
 int level = 1;
 int score = 0;
 
+// Treasure
+bool treasure_get = false;
+
 // Time
 timer_id timer;
 
@@ -44,6 +49,8 @@ sprite_id exit_door;
 sprite_id mob;
 sprite_id platform;
 sprite_id platform_2;
+sprite_id treasure;
+sprite_id pit;
 
 // Sprite vectors
 char * hero_sprite =
@@ -67,13 +74,19 @@ char * zombie_sprite =
 /**/	" Z  "
 /**/	"ZZZZ";
 
+char * treasure_sprite =
+/**/  "$";
+
 char platform_1_sprite[61];
 
 char * platform_sprite =
-"====================================================";
+"============================================================================";
 
 char * platform_sprite_2 =
-"====================================================";
+"============================================================================";
+
+char * pit_sprite =
+"                                                                            ";
 
 
 void level_one(void);
@@ -204,9 +217,15 @@ void re_update(void) {
 
     // Draw border lines
     draw_line(0, 1, SCREEN_WIDTH, 1, '-'); // TOP LINE
-    draw_line(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, '='); // BOTTOM LINE
+
     draw_line(0, 2, 0, SCREEN_HEIGHT - 1, '|'); // LEFT LINE
     draw_line(SCREEN_WIDTH, 2, SCREEN_WIDTH, SCREEN_HEIGHT - 1, '|'); // RIGHT LINE
+    if (level == 3) {
+        draw_line(0, SCREEN_HEIGHT, SCREEN_WIDTH * 0.25-1, SCREEN_HEIGHT, '=');
+        draw_line(SCREEN_WIDTH * 0.75, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, '=');
+    } else {
+        draw_line(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, '='); // BOTTOM LINE
+    }
 
     // Draw stats
     draw_formatted(SCREEN_WIDTH * 0.11, 0, "Times: %02d:%02d", minutes, seconds);
@@ -219,7 +238,7 @@ void re_update(void) {
 
     if (level == 1) {
         level_1_gravity();
-    } else if (level == 2) {
+    } else if (level == 2 || level == 3) {
         level_2_gravity();
     }
 }
@@ -251,9 +270,10 @@ void level_two(void) {
     // Initialize the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
-    mob = sprite_create(SCREEN_WIDTH - 8, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
+    mob = sprite_create(SCREEN_WIDTH - 8, SCREEN_HEIGHT - 3, 2, 2, spinner_sprite);
     platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_sprite);
-    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.45, platform_2_length + 1, 1, platform_sprite);
+    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_sprite);
+    treasure = sprite_create(SCREEN_WIDTH * 0.48, SCREEN_HEIGHT * 0.33, 1, 1, treasure_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
@@ -261,21 +281,45 @@ void level_two(void) {
     sprite_draw(mob);
     sprite_draw(platform);
     sprite_draw(platform_2);
+    sprite_draw(treasure);
 
     // Move the spinner
     sprite_turn_to(mob, -0.20, 0);
 
+    treasure_get = false;
     level_two_start = true;
 }
 
 void level_three(void) {
-    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
-    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
+    int platform_1_length = (int)(SCREEN_WIDTH * 0.3 - 1);
+    int platform_2_length = (int)(SCREEN_WIDTH * 0.1 - 1);
+		int pit_length = (int)(SCREEN_WIDTH * 0.5 - 1);
 
+    // Initialize the sprites
+    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
+    platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_sprite);
+    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_sprite);
+    exit_door = sprite_create(SCREEN_WIDTH * 0.43 + 3, SCREEN_HEIGHT * 0.55 - 4, 4, 4, exit_sprite);
+		treasure = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 1, 1, treasure_sprite);
+		pit = sprite_create(SCREEN_WIDTH * 0.25, SCREEN_HEIGHT - 1, pit_length, 1, pit_sprite);
+
+    // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
+    sprite_draw(platform);
+    sprite_draw(platform_2);
+		sprite_draw(treasure);
+		sprite_draw(pit);
 
+    sprite_turn_to(platform, 0.1, 0);
+
+    treasure_get = false;
     level_three_start = true;
+}
+
+void level_four(void) {
+
+    level_four_start = true;
 }
 
 void process_level_one(void) {
@@ -315,6 +359,11 @@ void process_level_two(void) {
   // Checks if the hero hits the other spirtes within the level
   if (process_collision(hero, exit_door)) {
       score += 100;
+      if (treasure_get) {
+          score += 50;
+      } else {
+          sprite_destroy(treasure);
+      }
       level_two_start = false;
       level_two_fin = true;
       sprite_destroy(hero);
@@ -327,6 +376,11 @@ void process_level_two(void) {
       lives -= 1;
       level_two();
   }
+  if (process_collision(hero, treasure)) {
+      treasure_get = true;
+      sprite_destroy(treasure);
+  }
+
   process_collision(hero, platform);
   process_collision(hero, platform_2);
 
@@ -336,6 +390,48 @@ void process_level_two(void) {
   sprite_draw(mob);
   sprite_draw(platform);
   sprite_draw(platform_2);
+  if (!treasure_get) {
+      sprite_draw(treasure);
+  }
+}
+
+void process_level_three(void) {
+  if (sprite_x(platform) < 1 || sprite_x(platform) + sprite_width(platform) > SCREEN_WIDTH - 1) {
+      sprite_turn(platform, 180);
+  }
+
+  if (process_collision(hero, exit_door)) {
+      score += 100;
+      if (treasure_get) {
+        score += 50;
+      }
+      level_three_start = false;
+      level_three_fin = true;
+      sprite_destroy(hero);
+      sprite_destroy(platform);
+      sprite_destroy(platform_2);
+      level += 1;
+      level_four();
+  } else if (process_collision(hero, pit)) {
+      lives -= 1;
+      level_three();
+  }
+  if (process_collision(hero, treasure)) {
+      treasure_get = true;
+      sprite_destroy(treasure);
+  }
+  process_collision(hero, platform);
+  process_collision(hero, platform_2);
+
+  sprite_step(platform);
+  sprite_draw(hero);
+  sprite_draw(exit_door);
+  sprite_draw(platform);
+  sprite_draw(platform_2);
+  sprite_draw(pit);
+  if (!treasure_get) {
+      sprite_draw(treasure);
+  }
 }
 
 void process_time(void) {
@@ -365,6 +461,11 @@ void process(void) {
     // Within LEVEL TWO
     else if (level_two_start && !level_two_fin) {
         process_level_two();
+    }
+
+    // Within LEVEL THREE
+    else if (level_three_start && !level_three_fin) {
+        process_level_three();
     }
 
     // Check if lives has reached 0
