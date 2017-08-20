@@ -535,6 +535,7 @@ void process_level_two(void) {
     }
     if (process_collision(hero, treasure)) {
         treasure_get = true;
+        score += 50;
         sprite_destroy(treasure);
     }
 
@@ -578,6 +579,7 @@ void process_level_three(void) {
     }
     if (process_collision(hero, treasure)) {
         treasure_get = true;
+        score += 50;
         sprite_destroy(treasure);
     }
     process_collision(hero, platform);
