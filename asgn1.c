@@ -41,8 +41,7 @@ timer_id timer;
 // Sprites
 sprite_id hero;
 sprite_id exit_door;
-sprite_id zombie;
-sprite_id spinner;
+sprite_id mob;
 sprite_id platform;
 sprite_id platform_2;
 
@@ -159,13 +158,36 @@ void setup(void) {
     level_one();
 }
 
-void gravity(void) {
+void level_1_gravity(void) {
     int hy = round(sprite_y(platform));
 
     // Check if the platform
     if (round(sprite_y(hero)) == hy + round(sprite_height(platform)) - 4
       &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
       &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero)) {
+        on_platform = true;
+    } else {
+        on_platform = false;
+    }
+
+    if (sprite_y(hero) < SCREEN_HEIGHT - 3 && !on_platform) {
+        sprite_turn_to(hero, hero_dx, hero_dy + 0.1);
+    } else {
+        sprite_turn_to(hero, hero_dx, 0);
+    }
+}
+
+void level_2_gravity(void) {
+    int by = round(sprite_y(platform));
+    int hy = round(sprite_y(platform_2));
+
+    // Check if the platform
+    if ((round(sprite_y(hero)) == hy + round(sprite_height(platform_2)) - 4
+      &&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
+      &&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
+      || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
+        &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
+        &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero))) {
         on_platform = true;
     } else {
         on_platform = false;
@@ -195,126 +217,125 @@ void re_update(void) {
     hero_dx = sprite_dx(hero);
     hero_dy = sprite_dy(hero);
 
-    gravity();
+    if (level == 1) {
+        level_1_gravity();
+    } else if (level == 2) {
+        level_2_gravity();
+    }
 }
 
 void level_one(void) {
-    platform_1_sprite[61];
     int platform_length = (int)(SCREEN_WIDTH * 0.3 - 1);
-    int i, pos = 0;
-
-    for (i = 0; i < platform_length; i+=1) {
-        pos += sprintf(&platform_1_sprite[pos], "%d", platform_sprite[i]);
-    }
-
     // Initialise sprite
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
-    zombie = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, zombie_sprite);
+    mob = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, zombie_sprite);
     platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_length + 1, 1, platform_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
-    sprite_draw(zombie);
+    sprite_draw(mob);
     sprite_draw(platform);
 
     // Move the zombine
-    sprite_turn_to(zombie, -0.15, 0);
+    sprite_turn_to(mob, -0.15, 0);
 
     level_one_start = true;
 }
 
 void level_two(void) {
-    char platform_2_sprite[21];
     int platform_1_length = (int)(SCREEN_WIDTH * 0.3 - 1);
-
-    // for (n = 0; n < platform_2_length; n+=1) {
-    //     pos2 += sprintf(&platform_2_sprite[pos2], "%d", platform_sprite_2[n]);
-    // }
+    int platform_2_length = (int)(SCREEN_WIDTH * 0.1 - 1);
 
     // Initialize the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
-    spinner = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
-    //platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_1_sprite);
-    //platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_2_sprite);
+    mob = sprite_create(SCREEN_WIDTH - 8, SCREEN_HEIGHT - 2, 2, 2, spinner_sprite);
+    platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_sprite);
+    platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.45, platform_2_length + 1, 1, platform_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
-    sprite_draw(spinner);
+    sprite_draw(mob);
     sprite_draw(platform);
-    //sprite_draw(platform_2);
+    sprite_draw(platform_2);
 
     // Move the spinner
-    sprite_turn_to(spinner, -0.2, 0);
+    sprite_turn_to(mob, -0.20, 0);
 
     level_two_start = true;
 }
 
 void level_three(void) {
+    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
+    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
 
+    sprite_draw(hero);
+    sprite_draw(exit_door);
 
     level_three_start = true;
 }
 
 void process_level_one(void) {
-    // Check if zombie has hit the wall
-    if (sprite_x(zombie) < 1 || sprite_x(zombie) > SCREEN_WIDTH - 3) {
-        sprite_turn(zombie, 180);
+    // Check if mob has hit the wall
+    if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 3) {
+        sprite_turn(mob, 180);
     }
 
     // Check if the hero hits other sprites within the level
-    if (process_collision(hero, zombie)) {
-        lives -= 1;
-        level_one();
-    }
-    process_collision(hero, platform);
     if (process_collision(hero, exit_door)) {
         score += 100;
         level_one_start = false;
         level_one_fin = true;
         sprite_destroy(hero);
-        //sprite_destroy(platform);
-        sprite_destroy(zombie);
+        sprite_destroy(mob);
+        sprite_destroy(platform);
         level += 1;
         level_two();
+    } else if (process_collision(hero, mob)) {
+        lives -= 1;
+        level_one();
     }
+    process_collision(hero, platform);
 
-    sprite_step(zombie);
-    sprite_draw(zombie);
+
+    sprite_step(mob);
+    sprite_draw(mob);
     sprite_draw(platform);
 }
 
 void process_level_two(void) {
   // Check if the spinner hit the wall
-  if (sprite_x(spinner) < 1 || sprite_x(spinner) > SCREEN_WIDTH - 2) {
-      sprite_turn(spinner, 180);
+  if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 2) {
+      sprite_turn(mob, 180);
   }
 
   // Checks if the hero hits the other spirtes within the level
-  if (process_collision(hero, spinner)) {
-      lives -= 1;
-      level_two();
-  }
-  process_collision(hero, platform);
   if (process_collision(hero, exit_door)) {
       score += 100;
       level_two_start = false;
       level_two_fin = true;
       sprite_destroy(hero);
-      //sprite_destroy(platform);
-      sprite_destroy(spinner);
+      sprite_destroy(mob);
+      sprite_destroy(platform);
+      sprite_destroy(platform_2);
       level += 1;
       level_three();
+  } else if (process_collision(hero, mob)) {
+      lives -= 1;
+      level_two();
   }
+  process_collision(hero, platform);
+  process_collision(hero, platform_2);
 
+  sprite_step(mob);
   sprite_draw(hero);
   sprite_draw(exit_door);
-  sprite_draw(spinner);
+  sprite_draw(mob);
   sprite_draw(platform);
-  //sprite_draw(platform_2);
+  sprite_draw(platform_2);
 }
 
 void process_time(void) {
@@ -345,7 +366,6 @@ void process(void) {
     else if (level_two_start && !level_two_fin) {
         process_level_two();
     }
-
 
     // Check if lives has reached 0
     if (lives <= 0) {
