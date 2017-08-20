@@ -641,18 +641,12 @@ void process_level_four(void) {
 }
 
 void process_level_five(void) {
-  if (process_collision(hero, amulet)) {
-      score += 100;
-      level_four_start = false;
-      level_four_fin = true;
-      sprite_destroy(hero);
-      sprite_destroy(platform);
-      sprite_destroy(platform_2);
-      sprite_destroy(platform_3);
-      sprite_destroy(exit_door);
-      level += 1;
-      level_five();
-  }
+    if (process_collision(hero, amulet)) {
+        score += 1000;
+        level_five_start = false;
+        level_five_fin = true;
+        game_over = true;
+    }
 
     if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 3) {
 				sprite_turn(mob, 180);
