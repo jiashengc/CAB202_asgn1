@@ -1,4 +1,4 @@
-// gcc asgn1.c -std=gnu99 -IZDK -LZDK -lzdk -lncurses -o Casgn1
+// gcc asgn1.c -std=gnu99 -IZDK -LZDK -lzdk -lncurses -o asgn1
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -172,6 +172,7 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 
 void setup(void) {
     // Start Level one
+		timer = create_timer(1000);
     level_one();
 }
 
@@ -563,6 +564,7 @@ void process_level_three(void) {
     }
     process_collision(hero, platform);
     process_collision(hero, platform_2);
+		process_collision(platform, hero);
 
     sprite_step(platform);
     sprite_draw(hero);
@@ -645,6 +647,8 @@ void process_level_five(void) {
 
 		process_collision(hero, platform);
 		process_collision(hero, platform_2);
+		process_collision(platform_2, hero);
+		process_collision(platform, hero);
 		process_collision(mob, platform);
 		process_collision(mob, platform_2);
 
@@ -660,15 +664,16 @@ void process_level_five(void) {
 }
 
 void process_time(void) {
-    delay += 1;
-    if (delay == 100) {
-        delay = 0;
-        seconds += 1;
-        if (seconds == 0) {
-            seconds = 0;
-            minutes += 1;
-        }
-    }
+
+		if (timer_expired(timer)) {
+				timer_reset(timer);
+				seconds += 1;
+				if (seconds == 60) {
+						minutes += 1;
+						seconds = 0;
+				}
+		}
+
 }
 
 void process(void) {
