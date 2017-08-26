@@ -1,5 +1,6 @@
 // gcc asgn1.c -std=gnu99 -IZDK -LZDK -lzdk -lncurses -o asgn1
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <math.h>
 #include <cab202_graphics.h>
@@ -488,6 +489,12 @@ void process_level_one(void) {
 }
 
 void process_level_two(void) {
+		// Initialize random number
+		srand(time(NULL));   // should only be called once
+		int i = 0;
+		int rx = rand() % 7 - 3;
+		int ry = rand() % 7 - 3;
+
     // Check if the spinner hit the wall
     if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 2) {
         sprite_turn(mob, 180);
@@ -529,6 +536,7 @@ void process_level_two(void) {
     sprite_draw(platform);
     sprite_draw(platform_2);
     if (!treasure_get) {
+				draw_char(SCREEN_WIDTH * 0.48 + rx, SCREEN_HEIGHT * 0.33 + ry, '*');
         sprite_draw(treasure);
     }
 }
