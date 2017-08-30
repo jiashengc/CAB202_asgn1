@@ -74,11 +74,11 @@ char * exit_sprite =
 /**/	"EXIT"
 /**/	"|  |"
 /**/	"| .|"
-/**/  "|  |";
+/**/    "|  |";
 
 char * spinner_sprite =
-/**/  " |"
-/**/  "/\\";
+/**/    " |"
+/**/    "/\\";
 
 char * zombie_sprite =
 /**/	"ZZZZ"
@@ -87,20 +87,20 @@ char * zombie_sprite =
 /**/	"ZZZZ";
 
 char * boulder_sprite =
-/**/  "/''\\"
-/**/  "\\__//";
+/**/    "/''\\"
+/**/    "\\__//";
 
 char * treasure_sprite =
-/**/  "$";
+/**/    "$";
 
 char * key_sprite =
-/**/  "o-+";
+/**/    "o-+";
 
 char * amulet_sprite =
-/**/  " _ "
-/**/  "/ \\"
-/**/  "\\ /"
-/**/  " @ ";
+/**/    " _ "
+/**/    "/ \\"
+/**/    "\\ /"
+/**/    " @ ";
 
 char * platform_sprite =
 "============================================================================";
@@ -144,26 +144,25 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 			double dx = sprite_dx(hero), dy = sprite_dy(hero);
 
 			if ( hy == oy + sprite_height(hero) - 1 && dy < 0 ) {
-				dy = -dy;
+			    dy = -dy;
 			}
 
 			else if ( hx + sprite_width(hero) - 1 == ox && dx > 0 ) {
-				dx = 0;
+			    dx = 0;
 			}
 
 			else if ( hx == ox + sprite_width(obj_2) - 1 && dx < 0 ) {
-				dx = 0;
+			    dx = 0;
 			}
 
 			else {
-				dy = 0;
-        on_platform = true;
+			    dy = 0;
+                on_platform = true;
 			}
 
 			sprite_back(hero);
 			sprite_turn_to(hero, dx, dy);
-		}
-		else {
+		} else {
 			sprite_move_to(hero, sprite_x(hero), sprite_y(obj_2) + sprite_height(obj_2));
 		}
 	}
@@ -173,7 +172,7 @@ bool process_collision(sprite_id obj_1, sprite_id obj_2) {
 
 void setup(void) {
     // Start Level one
-		timer = create_timer(1000);
+	timer = create_timer(1000);
     level_one();
 }
 
@@ -182,8 +181,8 @@ void level_1_gravity(void) {
 
     // Check if the platform
     if (round(sprite_y(hero)) == hy + round(sprite_height(platform)) - 4
-      &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
-      &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero)) {
+    &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
+    &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero)) {
         on_platform = true;
     } else {
         on_platform = false;
@@ -202,9 +201,9 @@ void level_2_gravity(void) {
 
     // Check if the platform
     if ((round(sprite_y(hero)) == hy + round(sprite_height(platform_2)) - 4
-      &&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
-      &&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
-      || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
+        &&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
+        &&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
+        || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
         &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
         &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero))) {
         on_platform = true;
@@ -226,12 +225,12 @@ void level_4_gravity(void) {
 
     // Check if the platform
     if ((round(sprite_y(hero)) == hy + round(sprite_height(platform_2)) - 4
-      &&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
-      &&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
-      || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
+        &&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
+        &&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
+        || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
         &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
         &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero))
-      || (round(sprite_y(hero)) == ky + round(sprite_height(platform_3)) - 4
+        || (round(sprite_y(hero)) == ky + round(sprite_height(platform_3)) - 4
         &&  sprite_x(hero) < sprite_x(platform_3) + sprite_width(platform_3)
         &&  sprite_x(platform_3) < sprite_x(hero) + sprite_width(hero))) {
         on_platform = true;
@@ -258,41 +257,41 @@ void level_5_gravity(void) {
 		if ((round(sprite_y(hero)) == hy + round(sprite_height(platform_2)) - 4
 			&&  sprite_x(hero) < sprite_x(platform_2) + sprite_width(platform_2)
 			&&  sprite_x(platform_2) < sprite_x(hero) + sprite_width(hero))
-			|| (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
-				&&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
-				&&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero))) {
-				on_platform = true;
+            || (round(sprite_y(hero)) == by + round(sprite_height(platform)) - 4
+            &&  sprite_x(hero) < sprite_x(platform) + sprite_width(platform)
+            &&  sprite_x(platform) < sprite_x(hero) + sprite_width(hero))) {
+			on_platform = true;
 		} else {
-				on_platform = false;
+			on_platform = false;
 		}
 
 		if ((round(sprite_y(mob)) == hy + round(sprite_height(platform_2)) - 3
 			&&  sprite_x(mob) < sprite_x(platform_2) + sprite_width(platform_2)
 			&&  sprite_x(platform_2) < sprite_x(mob) + sprite_width(mob))
 			|| (round(sprite_y(mob)) == by + round(sprite_height(platform)) - 3
-				&&  sprite_x(mob) < sprite_x(platform) + sprite_width(platform)
-				&&  sprite_x(platform) < sprite_x(mob) + sprite_width(mob))) {
-				mob_on_platform = true;
+            &&  sprite_x(mob) < sprite_x(platform) + sprite_width(platform)
+            &&  sprite_x(platform) < sprite_x(mob) + sprite_width(mob))) {
+			mob_on_platform = true;
 		} else {
-				mob_on_platform = false;
+            mob_on_platform = false;
 		}
 
 		if (sprite_y(hero) < SCREEN_HEIGHT - 3 && !on_platform) {
-				sprite_turn_to(hero, hero_dx, hero_dy + 0.05);
+			sprite_turn_to(hero, hero_dx, hero_dy + 0.05);
 		} else {
-				sprite_turn_to(hero, hero_dx, 0);
+			sprite_turn_to(hero, hero_dx, 0);
 		}
 
 		if ((sprite_y(mob) < SCREEN_HEIGHT - 2 || sprite_x(mob) > SCREEN_WIDTH * 0.25 - 1) && !mob_on_platform) {
-				sprite_turn_to(mob, mob_dx, mob_dy + 0.02);
+			sprite_turn_to(mob, mob_dx, mob_dy + 0.02);
 		} else {
-				sprite_turn_to(mob, mob_dx, 0);
+			sprite_turn_to(mob, mob_dx, 0);
 		}
 
 		if (sprite_y(mob) > SCREEN_HEIGHT) {
-				sprite_destroy(mob);
-				mob = sprite_create(mob_x, 3, 4, 2, boulder_sprite);
-				sprite_turn_to(mob, mob_dx, mob_dy);
+            sprite_destroy(mob);
+            mob = sprite_create(mob_x, 3, 4, 2, boulder_sprite);
+            sprite_turn_to(mob, mob_dx, mob_dy);
 		}
 }
 
@@ -328,8 +327,8 @@ void re_update(void) {
     } else if (level == 4) {
         level_4_gravity();
     } else if (level == 5) {
-				level_5_gravity();
-		}
+		level_5_gravity();
+	}
 }
 
 void level_one(void) {
@@ -382,23 +381,23 @@ void level_two(void) {
 void level_three(void) {
     int platform_1_length = (int)(SCREEN_WIDTH * 0.3 - 1);
     int platform_2_length = (int)(SCREEN_WIDTH * 0.1 - 1);
-		int pit_length = (int)(SCREEN_WIDTH * 0.5 - 1);
+	int pit_length = (int)(SCREEN_WIDTH * 0.5 - 1);
 
     // Initialize the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
     platform = sprite_create(SCREEN_WIDTH * 0.33, SCREEN_HEIGHT * 0.77, platform_1_length + 1, 1, platform_sprite);
     platform_2 = sprite_create(SCREEN_WIDTH * 0.43, SCREEN_HEIGHT * 0.55, platform_2_length + 1, 1, platform_sprite);
     exit_door = sprite_create(SCREEN_WIDTH * 0.43 + 3, SCREEN_HEIGHT * 0.55 - 4, 4, 4, exit_sprite);
-		treasure = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 1, 1, treasure_sprite);
-		pit = sprite_create(SCREEN_WIDTH * 0.25, SCREEN_HEIGHT - 1, pit_length, 1, pit_sprite);
+    treasure = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 2, 1, 1, treasure_sprite);
+    pit = sprite_create(SCREEN_WIDTH * 0.25, SCREEN_HEIGHT - 1, pit_length, 1, pit_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
     sprite_draw(exit_door);
     sprite_draw(platform);
     sprite_draw(platform_2);
-		sprite_draw(treasure);
-		sprite_draw(pit);
+    sprite_draw(treasure);
+    sprite_draw(pit);
 
     sprite_turn_to(platform, 0.1, 0);
 
@@ -407,16 +406,16 @@ void level_three(void) {
 }
 
 void level_four(void) {
-		int platform_length = (int)(SCREEN_WIDTH * 0.6 - 1);
+    int platform_length = (int)(SCREEN_WIDTH * 0.6 - 1);
 
-		// Initialise the sprites
-		hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
-		exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
-		platform = sprite_create(SCREEN_WIDTH * 0.4 + 2, SCREEN_HEIGHT * 0.78, platform_length, 1, platform_sprite);
-		platform_2 = sprite_create(0, SCREEN_HEIGHT * 0.56, platform_length, 1, platform_sprite);
-		platform_3 = sprite_create(SCREEN_WIDTH * 0.4 + 2, SCREEN_HEIGHT * 0.34, platform_length, 1, platform_sprite);
-		key = sprite_create(SCREEN_WIDTH - 6, 5, 3, 1, key_sprite);
-		wall = sprite_create(SCREEN_WIDTH * 0.65, SCREEN_HEIGHT * 0.79 + 1, 2, SCREEN_HEIGHT - SCREEN_HEIGHT * 0.77 - 1, wall_sprite);
+    // Initialise the sprites
+    hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
+    exit_door = sprite_create(SCREEN_WIDTH - 6, SCREEN_HEIGHT - 4, 4, 4, exit_sprite);
+    platform = sprite_create(SCREEN_WIDTH * 0.4 + 2, SCREEN_HEIGHT * 0.78, platform_length, 1, platform_sprite);
+    platform_2 = sprite_create(0, SCREEN_HEIGHT * 0.56, platform_length, 1, platform_sprite);
+    platform_3 = sprite_create(SCREEN_WIDTH * 0.4 + 2, SCREEN_HEIGHT * 0.34, platform_length, 1, platform_sprite);
+    key = sprite_create(SCREEN_WIDTH - 6, 5, 3, 1, key_sprite);
+    wall = sprite_create(SCREEN_WIDTH * 0.65, SCREEN_HEIGHT * 0.79 + 1, 2, SCREEN_HEIGHT - SCREEN_HEIGHT * 0.77 - 1, wall_sprite);
 
     // Draw the sprites
     sprite_draw(hero);
@@ -427,14 +426,13 @@ void level_four(void) {
     sprite_draw(wall);
     sprite_draw(key);
 
-		key_get = false;
+    key_get = false;
     level_four_start = true;
 }
 
 void level_five(void) {
     int platform_length = (int)(SCREEN_WIDTH * 0.5);
     int pit_length = (int)(SCREEN_WIDTH * 0.7 - 1);
-
 
     // Initialise the sprites
     hero = sprite_create(2, SCREEN_HEIGHT - 3, 3, 3, hero_sprite);
@@ -443,7 +441,6 @@ void level_five(void) {
     mob = sprite_create(6, 3, 4, 2, boulder_sprite);
     amulet = sprite_create(SCREEN_WIDTH * 0.43 + 2, SCREEN_HEIGHT * 0.2 - 3, 3, 4, amulet_sprite);
     pit = sprite_create(SCREEN_WIDTH * 0.3 + 1, SCREEN_HEIGHT - 1, pit_length, 1, pit_sprite);
-
 
     // Draw the sprites
     sprite_draw(hero);
@@ -457,7 +454,7 @@ void level_five(void) {
     sprite_turn_to(platform_2, 0.2, 0);
     sprite_turn_to(mob, 0.25, 0);
 
-		level_five_start = true;
+	level_five_start = true;
 }
 
 void process_level_one(void) {
@@ -489,11 +486,11 @@ void process_level_one(void) {
 }
 
 void process_level_two(void) {
-		// Initialize random number
-		srand(time(NULL));   // should only be called once
-		int i = 0;
-		int rx = rand() % 7 - 3;
-		int ry = rand() % 7 - 3;
+    // Initialize random number
+    srand(time(NULL));   // should only be called once
+    int i = 0;
+    int rx = rand() % 7 - 3;
+    int ry = rand() % 7 - 3;
 
     // Check if the spinner hit the wall
     if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 2) {
@@ -536,7 +533,7 @@ void process_level_two(void) {
     sprite_draw(platform);
     sprite_draw(platform_2);
     if (!treasure_get) {
-				draw_char(SCREEN_WIDTH * 0.48 + rx, SCREEN_HEIGHT * 0.33 + ry, '*');
+		draw_char(SCREEN_WIDTH * 0.48 + rx, SCREEN_HEIGHT * 0.33 + ry, '*');
         sprite_draw(treasure);
     }
 }
@@ -549,7 +546,7 @@ void process_level_three(void) {
     if (process_collision(hero, exit_door)) {
         score += 100;
         if (treasure_get) {
-          score += 50;
+            score += 50;
         } else {
             sprite_destroy(treasure);
         }
@@ -572,7 +569,7 @@ void process_level_three(void) {
     }
     process_collision(hero, platform);
     process_collision(hero, platform_2);
-		process_collision(platform, hero);
+	process_collision(platform, hero);
 
     sprite_step(platform);
     sprite_draw(hero);
@@ -610,7 +607,6 @@ void process_level_four(void) {
         process_collision(hero, wall);
     }
 
-
     sprite_draw(hero);
     sprite_draw(exit_door);
     sprite_draw(platform);
@@ -632,14 +628,14 @@ void process_level_five(void) {
     }
 
     if (sprite_x(mob) < 1 || sprite_x(mob) > SCREEN_WIDTH - 3) {
-				sprite_turn(mob, 180);
-		}
+		sprite_turn(mob, 180);
+	}
 
-		if (sprite_x(platform) < 1 || sprite_x(platform) + sprite_width(platform) > SCREEN_WIDTH - 1) {
+	if (sprite_x(platform) < 1 || sprite_x(platform) + sprite_width(platform) > SCREEN_WIDTH - 1) {
         sprite_turn(platform, 180);
     }
 
-		if (sprite_x(platform_2) < 1 || sprite_x(platform_2) + sprite_width(platform_2) > SCREEN_WIDTH - 1) {
+	if (sprite_x(platform_2) < 1 || sprite_x(platform_2) + sprite_width(platform_2) > SCREEN_WIDTH - 1) {
         sprite_turn(platform_2, 180);
     }
 
@@ -653,14 +649,14 @@ void process_level_five(void) {
         level_five();
     }
 
-		process_collision(hero, platform);
-		process_collision(hero, platform_2);
-		process_collision(platform_2, hero);
-		process_collision(platform, hero);
-		process_collision(mob, platform);
-		process_collision(mob, platform_2);
+    process_collision(hero, platform);
+    process_collision(hero, platform_2);
+    process_collision(platform_2, hero);
+    process_collision(platform, hero);
+    process_collision(mob, platform);
+    process_collision(mob, platform_2);
 
-		sprite_step(mob);
+	sprite_step(mob);
     sprite_step(platform);
     sprite_step(platform_2);
     sprite_draw(hero);
@@ -672,16 +668,14 @@ void process_level_five(void) {
 }
 
 void process_time(void) {
-
-		if (timer_expired(timer)) {
-				timer_reset(timer);
-				seconds += 1;
-				if (seconds == 60) {
-						minutes += 1;
-						seconds = 0;
-				}
-		}
-
+	if (timer_expired(timer)) {
+        timer_reset(timer);
+        seconds += 1;
+        if (seconds == 60) {
+                minutes += 1;
+                seconds = 0;
+        }	
+    }
 }
 
 void process(void) {
@@ -706,15 +700,15 @@ void process(void) {
         process_level_three();
     }
 
-		// within LEVEL FOUR
-		else if (level_four_start && !level_four_fin) {
-				process_level_four();
-		}
+    // within LEVEL FOUR
+    else if (level_four_start && !level_four_fin) {
+            process_level_four();
+    }
 
-		// within LEVEL FIVE
-		else if (level_five_start && !level_five_fin) {
-				process_level_five();
-		}
+    // within LEVEL FIVE
+    else if (level_five_start && !level_five_fin) {
+            process_level_five();
+    }
 
     // Check if lives has reached 0
     if (lives <= 0) {
@@ -771,7 +765,7 @@ void process(void) {
             case 4:
                 level_four_start = false;
                 level_five_start = true;
-								level += 1;
+				level += 1;
                 level_five();
                 break;
         }
@@ -814,41 +808,41 @@ void game_over_screen(void) {
 }
 
 int main(void) {
-  setup_screen();
+    setup_screen();
 
-  #if defined(AUTO_SAVE_SCREEN)
-      auto_save_screen(true);
-  #endif
+    #if defined(AUTO_SAVE_SCREEN)
+        auto_save_screen(true);
+    #endif
 
-  setup();
+    setup();
 
-  while(!game_over) {
-      process();
+    while(!game_over) {
+        process();
 
-      if (update_screen) {
-          show_screen();
-      }
+        if (update_screen) {
+            show_screen();
+        }
 
-      timer_pause(DELAY);
-  }
+        timer_pause(DELAY);
+    }
 
-  cleanup();
+    cleanup();
 
-  while(!the_end) {
-      game_over_screen();
+    while(!the_end) {
+        game_over_screen();
 
-      if (update_screen) {
-          show_screen();
-      }
+        if (update_screen) {
+            show_screen();
+        }
 
-      timer_pause(DELAY);
+        timer_pause(DELAY);
 
-      if (wait_char() >= 0) {
-          the_end = true;
-      }
-  }
+        if (wait_char() >= 0) {
+            the_end = true;
+        }
+    }
 
-  timer_pause(100);
+    timer_pause(100);
 
-  return 0;
+    return 0;
 }
