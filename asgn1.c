@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <curses.h>
 #include <cab202_graphics.h>
 #include <cab202_sprites.h>
 #include <cab202_timers.h>
@@ -716,7 +717,7 @@ void process(void) {
 
     // Check for hero movements
     // Check if the hero is moving right
-    if (input == 'd' && sprite_dy(hero) == 0) {
+    if ((input == 'd' || input == KEY_RIGHT) && sprite_dy(hero) == 0) {
         if (hero_dx > 0) {
             sprite_turn_to(hero, 0.4, hero_dy);
         } else if (hero_dx < 0) {
@@ -726,7 +727,7 @@ void process(void) {
         }
     }
     // Check if the hero is moving left
-    if (input == 'a' && sprite_dy(hero) == 0) {
+    if ((input == 'a' || input == KEY_LEFT) && sprite_dy(hero) == 0) {
         if (hero_dx < 0) {
             sprite_turn_to(hero, -0.4, hero_dy);
         } else if (hero_dx > 0) {
@@ -736,7 +737,7 @@ void process(void) {
         }
     }
     // Check if the player jumps
-    if (input == 'w' && sprite_dy(hero) == 0) {
+    if ((input == 'w' || input == KEY_UP) && sprite_dy(hero) == 0) {
         sprite_turn_to(hero, hero_dx, hero_dy - 1.5);
         on_platform = false;
     }
