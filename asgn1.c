@@ -1,4 +1,4 @@
-// gcc asgn1.c -std=gnu99 -IZDK -LZDK -lzdk -lncurses -o asgn1
+// gcc asng1.c -std=gnu99 -Wall -Werror -IZDK -LZDK -lzdk -lncurses -lm -o -asgn1
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -488,7 +488,6 @@ void process_level_one(void) {
 void process_level_two(void) {
     // Initialize random number
     srand(time(NULL));   // should only be called once
-    int i = 0;
     int rx = rand() % 7 - 3;
     int ry = rand() % 7 - 3;
 
